@@ -161,6 +161,229 @@ glm::mat4 individualTransformationsToMat4(IndividualTransformations transformati
     return result;
 }
 
+void DrawCube(GLuint transformLoc, glm::mat4 compoundedTransformations, GLuint cubeVAO) {
+
+    glm::mat4 model_matrix = /*startingPosition * */ compoundedTransformations; // It is assumed that the startingPosition is the origin
+	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(model_matrix));
+
+	glBindVertexArray(cubeVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 12*3);
+}
+
+class Horse {
+
+    public:
+        Horse(IndividualTransformations userInputtedTransformations, GLuint transformLoc, glm::mat4 world_mat, GLuint cubeVAO) {
+                    //Cube Transformations
+            //HORSE
+
+            //Head
+
+            //Torso
+            float torsoScaleX = 1.5f;
+            float torsoScaleY = 0.75f;
+            float torsoScaleZ = 0.75f;
+
+            torsoPivot.translation.y = 1.375f;
+            torsoPivot.parent = &userInputtedTransformations;
+
+            IndividualTransformations torsoTransform;
+            torsoTransform.scale = glm::vec3(torsoScaleX, torsoScaleY, torsoScaleZ);	//only change scale
+            torsoTransform.parent = &torsoPivot;	//pivot is the parent
+            DrawCube(transformLoc, world_mat * individualTransformationsToMat4(torsoTransform), cubeVAO);
+
+            //Neck
+            IndividualTransformations neckPivot;
+            neckPivot.translation = glm::vec3(-0.25f-torsoScaleX/2, -0.25f+torsoScaleY/2, 0.0f);
+            neckPivot.rot_z = glm::radians(-45.0f);
+            neckPivot.parent = &torsoPivot;
+
+    //      	float neckScaleX = 0.75f;
+    //      	float neckScaleY = 0.25f;
+    //      	float neckScaleZ = 0.25f;
+    //
+    //      	float neckLocationX = neckScaleX;
+    //      	float neckLocationY = neckScaleY;
+    //      	float neckLocationZ = neckScaleZ;
+
+            IndividualTransformations neckTransform;
+            neckTransform.scale = glm::vec3(neckLocationX, neckLocationY, neckLocationZ);
+            neckTransform.parent = &neckPivot;	//pivot is the parent
+            DrawCube(transformLoc, world_mat * individualTransformationsToMat4(neckTransform), cubeVAO);
+
+            //Head
+    //        float headLocationX = 0.5f-torsoScaleX/2-neckScaleX/2;
+    //        float headLocationY = -2.0f*0*torsoScaleY/2+0*neckScaleY/2;
+    //        float headLocationZ = 0.0f;
+
+            IndividualTransformations headPivot;
+            headPivot.translation = glm::vec3(headLocationX, headLocationY, headLocationZ);
+            headPivot.rot_z = glm::radians(240.0f);
+            headPivot.parent = &neckPivot;
+
+    //      	float headScaleX = 0.75f;
+    //      	float headScaleY = 0.5f;
+    //      	float headScaleZ = 0.5f;
+
+            IndividualTransformations headTransform;
+            headTransform.scale = glm::vec3(headScaleX, headScaleY, headScaleZ);
+            headTransform.parent = &headPivot;	//pivot is the parent
+            DrawCube(transformLoc, world_mat * individualTransformationsToMat4(headTransform), cubeVAO);
+
+            // Left upper arm (from horse's point of view)
+    //      	float leftUpperArmScaleX = 0.25f;
+    //      	float leftUpperArmScaleY = 0.5f;
+    //      	float leftUpperArmScaleZ = 0.25;
+    //
+    //      	float leftUpperArmLocationX = leftUpperArmScaleX/2 - torsoScaleX/2;
+    //      	float leftUpperArmLocationY = -torsoScaleY/2-leftUpperArmScaleY/2;
+    //      	float leftUpperArmLocationZ = torsoScaleZ/2 - leftUpperArmScaleZ/2;
+
+    //        IndividualTransformations leftUpperArmPivot;
+            leftUpperArmPivot.translation = glm::vec3(leftUpperArmLocationX, leftUpperArmLocationY, leftUpperArmLocationZ);
+            leftUpperArmPivot.rot_z = glm::radians(0.0f);
+            leftUpperArmPivot.parent = &torsoPivot;
+
+            IndividualTransformations leftUpperArmTransform;
+            leftUpperArmTransform.scale = glm::vec3(leftUpperArmScaleX, leftUpperArmScaleY, leftUpperArmScaleZ);
+            leftUpperArmTransform.parent = &leftUpperArmPivot;	//pivot is the parent
+            DrawCube(transformLoc, world_mat * individualTransformationsToMat4(leftUpperArmTransform), cubeVAO);
+
+            // Left lower arm (from horse's point of view)
+    //        float leftLowerArmScaleX = leftUpperArmScaleX;
+    //        float leftLowerArmScaleY = leftUpperArmScaleY;
+    //        float leftLowerArmScaleZ = leftUpperArmScaleZ;
+    //
+    //        float leftLowerArmLocationX = 0.0f;
+    //        float leftLowerArmLocationY = -leftUpperArmScaleY;
+    //        float leftLowerArmLocationZ = 0.0f;
+
+            IndividualTransformations leftLowerArmPivot;
+            leftLowerArmPivot.translation = glm::vec3(leftLowerArmLocationX, leftLowerArmLocationY, leftLowerArmLocationZ);
+            leftLowerArmPivot.rot_z = glm::radians(0.0f);
+            leftLowerArmPivot.parent = &leftUpperArmPivot;
+
+            IndividualTransformations leftLowerArmTransform;
+            leftLowerArmTransform.scale = glm::vec3(leftLowerArmScaleX, leftLowerArmScaleY, leftLowerArmScaleZ);
+            leftLowerArmTransform.parent = &leftLowerArmPivot;	//pivot is the parent
+            DrawCube(transformLoc, world_mat * individualTransformationsToMat4(leftLowerArmTransform), cubeVAO);
+
+            // Right upper arm (from the horse's point of view)
+    //      	float rightUpperArmScaleX = leftUpperArmScaleX;
+    //      	float rightUpperArmScaleY = leftUpperArmScaleY;
+    //      	float rightUpperArmScaleZ = leftUpperArmScaleZ;
+    //
+    //      	float rightUpperArmLocationX = rightUpperArmScaleX/2 - torsoScaleX/2;
+    //      	float rightUpperArmLocationY = -torsoScaleY/2-rightUpperArmScaleY/2;
+    //      	float rightUpperArmLocationZ = -torsoScaleZ/2 + rightUpperArmScaleZ/2;
+
+            IndividualTransformations rightUpperArmPivot;
+            rightUpperArmPivot.translation = glm::vec3(rightUpperArmLocationX, rightUpperArmLocationY, rightUpperArmLocationZ);
+            rightUpperArmPivot.rot_z = glm::radians(0.0f);
+            rightUpperArmPivot.parent = &torsoPivot;
+
+            IndividualTransformations rightUpperArmTransform;
+            rightUpperArmTransform.scale = glm::vec3(rightUpperArmScaleX, rightUpperArmScaleY, rightUpperArmScaleZ);
+            rightUpperArmTransform.parent = &rightUpperArmPivot;	//pivot is the parent
+            DrawCube(transformLoc, world_mat * individualTransformationsToMat4(rightUpperArmTransform), cubeVAO);
+
+            // Right lower arm (from the horse's point of view)
+    //        float rightLowerArmScaleX = rightUpperArmScaleX;
+    //        float rightLowerArmScaleY = rightUpperArmScaleY;
+    //        float rightLowerArmScaleZ = rightUpperArmScaleZ;
+    //
+    //        float rightLowerArmLocationX = 0.0f;
+    //        float rightLowerArmLocationY = -rightUpperArmScaleY;
+    //        float rightLowerArmLocationZ = 0.0f;
+
+            IndividualTransformations rightLowerArmPivot;
+            rightLowerArmPivot.translation = glm::vec3(rightLowerArmLocationX, rightLowerArmLocationY, rightLowerArmLocationZ);
+            rightLowerArmPivot.rot_z = glm::radians(0.0f);
+            rightLowerArmPivot.parent = &rightUpperArmPivot;
+
+            IndividualTransformations rightLowerArmTransform;
+            rightLowerArmTransform.scale = glm::vec3(rightLowerArmScaleX, rightLowerArmScaleY, rightLowerArmScaleZ);
+            rightLowerArmTransform.parent = &rightLowerArmPivot;	//pivot is the parent
+            DrawCube(transformLoc, world_mat * individualTransformationsToMat4(rightLowerArmTransform), cubeVAO);
+
+            // Left upper leg (from the horse's point of view)
+    //        float leftUpperLegScaleX = leftUpperArmScaleX;
+    //      	float leftUpperLegScaleY = leftUpperArmScaleY;
+    //      	float leftUpperLegScaleZ = leftUpperArmScaleZ;
+    //
+    //      	float leftUpperLegLocationX = -leftUpperArmScaleX/2 + torsoScaleX/2;
+    //      	float leftUpperLegLocationY = leftUpperArmLocationY;
+    //      	float leftUpperLegLocationZ = leftUpperArmLocationZ;
+
+            IndividualTransformations leftUpperLegPivot;
+            leftUpperLegPivot.translation = glm::vec3(leftUpperLegLocationX, leftUpperLegLocationY, leftUpperLegLocationZ);
+            leftUpperLegPivot.rot_z = glm::radians(0.0f);
+            leftUpperLegPivot.parent = &torsoPivot;
+
+            IndividualTransformations leftUpperLegTransform;
+            leftUpperLegTransform.scale = glm::vec3(leftUpperLegScaleX, leftUpperLegScaleY, leftUpperLegScaleZ);
+            leftUpperLegTransform.parent = &leftUpperLegPivot;	//pivot is the parent
+            DrawCube(transformLoc, world_mat * individualTransformationsToMat4(leftUpperLegTransform), cubeVAO);
+
+            // Left lower leg (from the horse's point of view)
+    //        float leftLowerLegScaleX = leftUpperLegScaleX;
+    //      	float leftLowerLegScaleY = leftUpperLegScaleY;
+    //      	float leftLowerLegScaleZ = leftUpperLegScaleZ;
+    //
+    //      	float leftLowerLegLocationX = 0.0f;
+    //      	float leftLowerLegLocationY = -leftUpperLegScaleY;
+    //      	float leftLowerLegLocationZ = 0.0f;
+
+            IndividualTransformations leftLowerLegPivot;
+            leftLowerLegPivot.translation = glm::vec3(leftLowerLegLocationX, leftLowerLegLocationY, leftLowerLegLocationZ);
+            leftLowerLegPivot.rot_z = glm::radians(0.0f);
+            leftLowerLegPivot.parent = &leftUpperLegPivot;
+
+            IndividualTransformations leftLowerLegTransform;
+            leftLowerLegTransform.scale = glm::vec3(leftLowerLegScaleX, leftLowerLegScaleY, leftLowerLegScaleZ);
+            leftLowerLegTransform.parent = &leftLowerLegPivot;	//pivot is the parent
+            DrawCube(transformLoc, world_mat * individualTransformationsToMat4(leftLowerLegTransform), cubeVAO);
+
+            // Right upper leg (from the horse's point of view)
+    //        float rightUpperLegScaleX = rightUpperArmScaleX;
+    //      	float rightUpperLegScaleY = rightUpperArmScaleY;
+    //      	float rightUpperLegScaleZ = rightUpperArmScaleZ;
+    //
+    //      	float rightUpperLegLocationX = -rightUpperLegScaleX/2 + torsoScaleX/2;
+    //      	float rightUpperLegLocationY = -torsoScaleY/2-rightUpperArmScaleY/2;
+    //      	float rightUpperLegLocationZ = -torsoScaleZ/2 + rightUpperArmScaleZ/2;
+
+            IndividualTransformations rightUpperLegPivot;
+            rightUpperLegPivot.translation = glm::vec3(rightUpperLegLocationX, rightUpperLegLocationY, rightUpperLegLocationZ);
+            rightUpperLegPivot.rot_z = glm::radians(0.0f);
+            rightUpperLegPivot.parent = &torsoPivot;
+
+            IndividualTransformations rightUpperLegTransform;
+            rightUpperLegTransform.scale = glm::vec3(rightUpperLegScaleX, rightUpperLegScaleY, rightUpperLegScaleZ);
+            rightUpperLegTransform.parent = &rightUpperLegPivot;	//pivot is the parent
+            DrawCube(transformLoc, world_mat * individualTransformationsToMat4(rightUpperLegTransform), cubeVAO);
+
+            // Right lower leg (from the horse's point of view)
+    //        float rightLowerLegScaleX = rightUpperArmScaleX;
+    //      	float rightLowerLegScaleY = rightUpperArmScaleY;
+    //      	float rightLowerLegScaleZ = rightUpperArmScaleZ;
+    //
+    //      	float rightLowerLegLocationX = 0.0f;
+    //      	float rightLowerLegLocationY = -rightUpperArmScaleY;
+    //      	float rightLowerLegLocationZ = 0.0f;
+
+            IndividualTransformations rightLowerLegPivot;
+            rightLowerLegPivot.translation = glm::vec3(rightLowerLegLocationX, rightLowerLegLocationY, rightLowerLegLocationZ);
+            rightLowerLegPivot.rot_z = glm::radians(0.0f);
+            rightLowerLegPivot.parent = &rightUpperLegPivot;
+
+            IndividualTransformations rightLowerLegTransform;
+            rightLowerLegTransform.scale = glm::vec3(rightLowerLegScaleX, rightLowerLegScaleY, rightLowerLegScaleZ);
+            rightLowerLegTransform.parent = &rightLowerLegPivot;	//pivot is the parent
+            DrawCube(transformLoc, world_mat * individualTransformationsToMat4(rightLowerLegTransform), cubeVAO);
+        }
+};
+
 unsigned char* getTextureImageData(std::string fileName) {
     int width, height, numComponents;
 
@@ -185,15 +408,6 @@ unsigned char* getTextureImageData(std::string fileName) {
   return glm::translate(glm::mat4(1.0f),transformations.translation) * complete_rotation * glm::scale(glm::mat4(1.0f), transformations.scale);//glm::rotate(glm::mat4(1.0f), transformations.rotation)
   //return individualTransformations.rotation * individualTransformations.translation * individualTransformations.scale;
 }*/
-
-void DrawCube(GLuint transformLoc, glm::mat4 compoundedTransformations, GLuint cubeVAO) {
-
-    glm::mat4 model_matrix = /*startingPosition * */ compoundedTransformations; // It is assumed that the startingPosition is the origin
-	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(model_matrix));
-
-	glBindVertexArray(cubeVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 12*3);
-}
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
 
@@ -849,213 +1063,8 @@ int main()
       	//bit of a rename so it makes more sense
       	glm::mat4 world_mat = model_matrix;
 
-        //Cube Transformations
-        //HORSE
-
-        //Head
-
-        //Torso
-        float torsoScaleX = 1.5f;
-        float torsoScaleY = 0.75f;
-        float torsoScaleZ = 0.75f;
-
-        torsoPivot.translation.y = 1.375f;
-        torsoPivot.parent = &userInputtedTransformations;
-
-        IndividualTransformations torsoTransform;
-        torsoTransform.scale = glm::vec3(torsoScaleX, torsoScaleY, torsoScaleZ);	//only change scale
-      	torsoTransform.parent = &torsoPivot;	//pivot is the parent
-        DrawCube(transformLoc, world_mat * individualTransformationsToMat4(torsoTransform), cubeVAO);
-
-        //Neck
-      	IndividualTransformations neckPivot;
-        neckPivot.translation = glm::vec3(-0.25f-torsoScaleX/2, -0.25f+torsoScaleY/2, 0.0f);
-        neckPivot.rot_z = glm::radians(-45.0f);
-      	neckPivot.parent = &torsoPivot;
-
-//      	float neckScaleX = 0.75f;
-//      	float neckScaleY = 0.25f;
-//      	float neckScaleZ = 0.25f;
-//
-//      	float neckLocationX = neckScaleX;
-//      	float neckLocationY = neckScaleY;
-//      	float neckLocationZ = neckScaleZ;
-
-        IndividualTransformations neckTransform;
-        neckTransform.scale = glm::vec3(neckLocationX, neckLocationY, neckLocationZ);
-      	neckTransform.parent = &neckPivot;	//pivot is the parent
-        DrawCube(transformLoc, world_mat * individualTransformationsToMat4(neckTransform), cubeVAO);
-
-        //Head
-//        float headLocationX = 0.5f-torsoScaleX/2-neckScaleX/2;
-//        float headLocationY = -2.0f*0*torsoScaleY/2+0*neckScaleY/2;
-//        float headLocationZ = 0.0f;
-
-      	IndividualTransformations headPivot;
-        headPivot.translation = glm::vec3(headLocationX, headLocationY, headLocationZ);
-        headPivot.rot_z = glm::radians(240.0f);
-      	headPivot.parent = &neckPivot;
-
-//      	float headScaleX = 0.75f;
-//      	float headScaleY = 0.5f;
-//      	float headScaleZ = 0.5f;
-
-        IndividualTransformations headTransform;
-        headTransform.scale = glm::vec3(headScaleX, headScaleY, headScaleZ);
-      	headTransform.parent = &headPivot;	//pivot is the parent
-        DrawCube(transformLoc, world_mat * individualTransformationsToMat4(headTransform), cubeVAO);
-
-      	// Left upper arm (from horse's point of view)
-//      	float leftUpperArmScaleX = 0.25f;
-//      	float leftUpperArmScaleY = 0.5f;
-//      	float leftUpperArmScaleZ = 0.25;
-//
-//      	float leftUpperArmLocationX = leftUpperArmScaleX/2 - torsoScaleX/2;
-//      	float leftUpperArmLocationY = -torsoScaleY/2-leftUpperArmScaleY/2;
-//      	float leftUpperArmLocationZ = torsoScaleZ/2 - leftUpperArmScaleZ/2;
-
-//        IndividualTransformations leftUpperArmPivot;
-        leftUpperArmPivot.translation = glm::vec3(leftUpperArmLocationX, leftUpperArmLocationY, leftUpperArmLocationZ);
-        leftUpperArmPivot.rot_z = glm::radians(0.0f);
-      	leftUpperArmPivot.parent = &torsoPivot;
-
-      	IndividualTransformations leftUpperArmTransform;
-        leftUpperArmTransform.scale = glm::vec3(leftUpperArmScaleX, leftUpperArmScaleY, leftUpperArmScaleZ);
-      	leftUpperArmTransform.parent = &leftUpperArmPivot;	//pivot is the parent
-      	DrawCube(transformLoc, world_mat * individualTransformationsToMat4(leftUpperArmTransform), cubeVAO);
-
-        // Left lower arm (from horse's point of view)
-//        float leftLowerArmScaleX = leftUpperArmScaleX;
-//        float leftLowerArmScaleY = leftUpperArmScaleY;
-//        float leftLowerArmScaleZ = leftUpperArmScaleZ;
-//
-//        float leftLowerArmLocationX = 0.0f;
-//        float leftLowerArmLocationY = -leftUpperArmScaleY;
-//        float leftLowerArmLocationZ = 0.0f;
-
-        IndividualTransformations leftLowerArmPivot;
-        leftLowerArmPivot.translation = glm::vec3(leftLowerArmLocationX, leftLowerArmLocationY, leftLowerArmLocationZ);
-        leftLowerArmPivot.rot_z = glm::radians(0.0f);
-      	leftLowerArmPivot.parent = &leftUpperArmPivot;
-
-      	IndividualTransformations leftLowerArmTransform;
-        leftLowerArmTransform.scale = glm::vec3(leftLowerArmScaleX, leftLowerArmScaleY, leftLowerArmScaleZ);
-      	leftLowerArmTransform.parent = &leftLowerArmPivot;	//pivot is the parent
-      	DrawCube(transformLoc, world_mat * individualTransformationsToMat4(leftLowerArmTransform), cubeVAO);
-
-      	// Right upper arm (from the horse's point of view)
-//      	float rightUpperArmScaleX = leftUpperArmScaleX;
-//      	float rightUpperArmScaleY = leftUpperArmScaleY;
-//      	float rightUpperArmScaleZ = leftUpperArmScaleZ;
-//
-//      	float rightUpperArmLocationX = rightUpperArmScaleX/2 - torsoScaleX/2;
-//      	float rightUpperArmLocationY = -torsoScaleY/2-rightUpperArmScaleY/2;
-//      	float rightUpperArmLocationZ = -torsoScaleZ/2 + rightUpperArmScaleZ/2;
-
-        IndividualTransformations rightUpperArmPivot;
-        rightUpperArmPivot.translation = glm::vec3(rightUpperArmLocationX, rightUpperArmLocationY, rightUpperArmLocationZ);
-        rightUpperArmPivot.rot_z = glm::radians(0.0f);
-      	rightUpperArmPivot.parent = &torsoPivot;
-
-      	IndividualTransformations rightUpperArmTransform;
-        rightUpperArmTransform.scale = glm::vec3(rightUpperArmScaleX, rightUpperArmScaleY, rightUpperArmScaleZ);
-      	rightUpperArmTransform.parent = &rightUpperArmPivot;	//pivot is the parent
-      	DrawCube(transformLoc, world_mat * individualTransformationsToMat4(rightUpperArmTransform), cubeVAO);
-
-      	// Right lower arm (from the horse's point of view)
-//        float rightLowerArmScaleX = rightUpperArmScaleX;
-//        float rightLowerArmScaleY = rightUpperArmScaleY;
-//        float rightLowerArmScaleZ = rightUpperArmScaleZ;
-//
-//        float rightLowerArmLocationX = 0.0f;
-//        float rightLowerArmLocationY = -rightUpperArmScaleY;
-//        float rightLowerArmLocationZ = 0.0f;
-
-        IndividualTransformations rightLowerArmPivot;
-        rightLowerArmPivot.translation = glm::vec3(rightLowerArmLocationX, rightLowerArmLocationY, rightLowerArmLocationZ);
-        rightLowerArmPivot.rot_z = glm::radians(0.0f);
-      	rightLowerArmPivot.parent = &rightUpperArmPivot;
-
-      	IndividualTransformations rightLowerArmTransform;
-        rightLowerArmTransform.scale = glm::vec3(rightLowerArmScaleX, rightLowerArmScaleY, rightLowerArmScaleZ);
-      	rightLowerArmTransform.parent = &rightLowerArmPivot;	//pivot is the parent
-      	DrawCube(transformLoc, world_mat * individualTransformationsToMat4(rightLowerArmTransform), cubeVAO);
-
-        // Left upper leg (from the horse's point of view)
-//        float leftUpperLegScaleX = leftUpperArmScaleX;
-//      	float leftUpperLegScaleY = leftUpperArmScaleY;
-//      	float leftUpperLegScaleZ = leftUpperArmScaleZ;
-//
-//      	float leftUpperLegLocationX = -leftUpperArmScaleX/2 + torsoScaleX/2;
-//      	float leftUpperLegLocationY = leftUpperArmLocationY;
-//      	float leftUpperLegLocationZ = leftUpperArmLocationZ;
-
-        IndividualTransformations leftUpperLegPivot;
-        leftUpperLegPivot.translation = glm::vec3(leftUpperLegLocationX, leftUpperLegLocationY, leftUpperLegLocationZ);
-        leftUpperLegPivot.rot_z = glm::radians(0.0f);
-      	leftUpperLegPivot.parent = &torsoPivot;
-
-      	IndividualTransformations leftUpperLegTransform;
-        leftUpperLegTransform.scale = glm::vec3(leftUpperLegScaleX, leftUpperLegScaleY, leftUpperLegScaleZ);
-      	leftUpperLegTransform.parent = &leftUpperLegPivot;	//pivot is the parent
-      	DrawCube(transformLoc, world_mat * individualTransformationsToMat4(leftUpperLegTransform), cubeVAO);
-
-        // Left lower leg (from the horse's point of view)
-//        float leftLowerLegScaleX = leftUpperLegScaleX;
-//      	float leftLowerLegScaleY = leftUpperLegScaleY;
-//      	float leftLowerLegScaleZ = leftUpperLegScaleZ;
-//
-//      	float leftLowerLegLocationX = 0.0f;
-//      	float leftLowerLegLocationY = -leftUpperLegScaleY;
-//      	float leftLowerLegLocationZ = 0.0f;
-
-        IndividualTransformations leftLowerLegPivot;
-        leftLowerLegPivot.translation = glm::vec3(leftLowerLegLocationX, leftLowerLegLocationY, leftLowerLegLocationZ);
-        leftLowerLegPivot.rot_z = glm::radians(0.0f);
-      	leftLowerLegPivot.parent = &leftUpperLegPivot;
-
-      	IndividualTransformations leftLowerLegTransform;
-        leftLowerLegTransform.scale = glm::vec3(leftLowerLegScaleX, leftLowerLegScaleY, leftLowerLegScaleZ);
-      	leftLowerLegTransform.parent = &leftLowerLegPivot;	//pivot is the parent
-      	DrawCube(transformLoc, world_mat * individualTransformationsToMat4(leftLowerLegTransform), cubeVAO);
-
-        // Right upper leg (from the horse's point of view)
-//        float rightUpperLegScaleX = rightUpperArmScaleX;
-//      	float rightUpperLegScaleY = rightUpperArmScaleY;
-//      	float rightUpperLegScaleZ = rightUpperArmScaleZ;
-//
-//      	float rightUpperLegLocationX = -rightUpperLegScaleX/2 + torsoScaleX/2;
-//      	float rightUpperLegLocationY = -torsoScaleY/2-rightUpperArmScaleY/2;
-//      	float rightUpperLegLocationZ = -torsoScaleZ/2 + rightUpperArmScaleZ/2;
-
-        IndividualTransformations rightUpperLegPivot;
-        rightUpperLegPivot.translation = glm::vec3(rightUpperLegLocationX, rightUpperLegLocationY, rightUpperLegLocationZ);
-        rightUpperLegPivot.rot_z = glm::radians(0.0f);
-      	rightUpperLegPivot.parent = &torsoPivot;
-
-      	IndividualTransformations rightUpperLegTransform;
-        rightUpperLegTransform.scale = glm::vec3(rightUpperLegScaleX, rightUpperLegScaleY, rightUpperLegScaleZ);
-      	rightUpperLegTransform.parent = &rightUpperLegPivot;	//pivot is the parent
-      	DrawCube(transformLoc, world_mat * individualTransformationsToMat4(rightUpperLegTransform), cubeVAO);
-
-        // Right lower leg (from the horse's point of view)
-//        float rightLowerLegScaleX = rightUpperArmScaleX;
-//      	float rightLowerLegScaleY = rightUpperArmScaleY;
-//      	float rightLowerLegScaleZ = rightUpperArmScaleZ;
-//
-//      	float rightLowerLegLocationX = 0.0f;
-//      	float rightLowerLegLocationY = -rightUpperArmScaleY;
-//      	float rightLowerLegLocationZ = 0.0f;
-
-        IndividualTransformations rightLowerLegPivot;
-        rightLowerLegPivot.translation = glm::vec3(rightLowerLegLocationX, rightLowerLegLocationY, rightLowerLegLocationZ);
-        rightLowerLegPivot.rot_z = glm::radians(0.0f);
-      	rightLowerLegPivot.parent = &rightUpperLegPivot;
-
-      	IndividualTransformations rightLowerLegTransform;
-        rightLowerLegTransform.scale = glm::vec3(rightLowerLegScaleX, rightLowerLegScaleY, rightLowerLegScaleZ);
-      	rightLowerLegTransform.parent = &rightLowerLegPivot;	//pivot is the parent
-      	DrawCube(transformLoc, world_mat * individualTransformationsToMat4(rightLowerLegTransform), cubeVAO);
+// PUT_BACK?:
+        Horse h1(userInputtedTransformations, transformLoc, world_mat, cubeVAO);
 
 //      	std::cout << torsoPivot.translation.y << std::endl;
 //        std::cout << leftUpperArmPivot.translation.y << std::endl;
