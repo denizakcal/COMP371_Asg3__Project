@@ -1063,7 +1063,6 @@ int main()
       	//bit of a rename so it makes more sense
       	glm::mat4 world_mat = model_matrix;
 
-// PUT_BACK?:
         Horse h1(userInputtedTransformations, transformLoc, world_mat, cubeVAO);
 
 //      	std::cout << torsoPivot.translation.y << std::endl;
